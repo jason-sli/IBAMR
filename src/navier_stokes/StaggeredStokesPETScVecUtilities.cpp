@@ -415,7 +415,7 @@ StaggeredStokesPETScVecUtilities::constructPatchLevelAO(AO& ao,
         ++counter;
     }
 
-    AOCreateMapping(PETSC_COMM_WORLD, counter, &samrai_map[0], &petsc_map[0], &ao);
+    AOCreateMapping(PETSC_COMM_WORLD, counter, samrai_map.data(), petsc_map.data(), &ao);
 
     return;
 } // constructPatchLevelAO
@@ -659,7 +659,7 @@ StaggeredStokesPETScVecUtilities::constructPatchLevelDOFIndices_MAC(std::vector<
     const int mpi_rank = IBTK_MPI::getRank();
     num_dofs_per_proc.resize(mpi_size);
     std::fill(num_dofs_per_proc.begin(), num_dofs_per_proc.end(), 0);
-    IBTK_MPI::allGather(local_dof_count, &num_dofs_per_proc[0]);
+    IBTK_MPI::allGather(local_dof_count, num_dofs_per_proc.data());
     const int local_dof_offset = std::accumulate(num_dofs_per_proc.begin(), num_dofs_per_proc.begin() + mpi_rank, 0);
 
     // Assign local DOF indices.
