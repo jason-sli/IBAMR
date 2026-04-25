@@ -446,7 +446,7 @@ PETScVecUtilities::constructPatchLevelDOFIndices_cell(std::vector<int>& num_dofs
     const int mpi_rank = IBTK_MPI::getRank();
     num_dofs_per_proc.resize(mpi_size);
     std::fill(num_dofs_per_proc.begin(), num_dofs_per_proc.end(), 0);
-    IBTK_MPI::allGather(local_dof_count, &num_dofs_per_proc[0]);
+    IBTK_MPI::allGather(local_dof_count, num_dofs_per_proc.data());
     const int local_dof_offset = std::accumulate(num_dofs_per_proc.begin(), num_dofs_per_proc.begin() + mpi_rank, 0);
 
     // Assign local DOF indices.
@@ -558,7 +558,7 @@ PETScVecUtilities::constructPatchLevelDOFIndices_side(std::vector<int>& num_dofs
     const int mpi_rank = IBTK_MPI::getRank();
     num_dofs_per_proc.resize(mpi_size);
     std::fill(num_dofs_per_proc.begin(), num_dofs_per_proc.end(), 0);
-    IBTK_MPI::allGather(local_dof_count, &num_dofs_per_proc[0]);
+    IBTK_MPI::allGather(local_dof_count, num_dofs_per_proc.data());
     const int local_dof_offset = std::accumulate(num_dofs_per_proc.begin(), num_dofs_per_proc.begin() + mpi_rank, 0);
 
     // Assign local DOF indices.
@@ -673,7 +673,7 @@ PETScVecUtilities::constructPatchLevelAO_cell(AO& ao,
         }
     }
 
-    AOCreateMapping(PETSC_COMM_WORLD, counter, &samrai_idxs[0], &petsc_idxs[0], &ao);
+    AOCreateMapping(PETSC_COMM_WORLD, counter, samrai_idxs.data(), petsc_idxs.data(), &ao);
 
     return;
 
@@ -761,7 +761,7 @@ PETScVecUtilities::constructPatchLevelAO_side(AO& ao,
         ++counter;
     }
 
-    AOCreateMapping(PETSC_COMM_WORLD, counter, &samrai_map[0], &petsc_map[0], &ao);
+    AOCreateMapping(PETSC_COMM_WORLD, counter, samrai_map.data(), petsc_map.data(), &ao);
 
     return;
 

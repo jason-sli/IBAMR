@@ -136,6 +136,24 @@ get_data_time_str(const double data_time, const double current_time, const doubl
 }
 
 /*!
+ * Return the underlying data pointer when the container is non-empty and
+ * nullptr otherwise.
+ */
+template <class Container>
+inline auto
+get_data_or_null(Container& data) -> decltype(data.data())
+{
+    return data.empty() ? nullptr : data.data();
+}
+
+template <class Container>
+inline auto
+get_data_or_null(const Container& data) -> decltype(data.data())
+{
+    return data.empty() ? nullptr : data.data();
+}
+
+/*!
  * Get the smallest cell width on the specified level. This operation is
  * collective.
  */
