@@ -32,6 +32,8 @@
 #include <string>
 #include <cstring>
 #include <cstdio>
+#include <iomanip>
+#include <algorithm>
 #include <boost/limits.hpp>
 #include <boost/type_traits/conditional.hpp>
 #include <boost/type_traits/is_pointer.hpp>
@@ -278,38 +280,68 @@ namespace boost {
             bool shl_real_type(float val, char* begin) {
                 using namespace std;
                 const double val_as_double = val;
-                finish = start +
-#if defined(_MSC_VER) && (_MSC_VER >= 1400) && !defined(__SGI_STL_PORT) && !defined(_STLPORT_VERSION)
-                    sprintf_s(begin, CharacterBufferSize,
-#else
-                    sprintf(begin,
-#endif
-                    "%.*g", static_cast<int>(boost::detail::lcast_get_precision<float>()), val_as_double);
+                
+                ostringstream oss;
+                oss << setprecision(static_cast<int>(boost::detail::lcast_get_precision<float>()))
+                    << val_as_double;
+
+                if (oss.fail())
+                    return false;
+
+                string str = oss.str();
+
+                if (str.size() >= CharacterBufferSize)
+                    return false;
+
+                copy(str.begin(), str.end(), begin);
+                begin[str.size()] = '\0';
+
+                finish = start + str.size();
                 return finish > start;
             }
 
             bool shl_real_type(double val, char* begin) {
                 using namespace std;
-                finish = start +
-#if defined(_MSC_VER) && (_MSC_VER >= 1400) && !defined(__SGI_STL_PORT) && !defined(_STLPORT_VERSION)
-                    sprintf_s(begin, CharacterBufferSize,
-#else
-                    sprintf(begin,
-#endif
-                    "%.*g", static_cast<int>(boost::detail::lcast_get_precision<double>()), val);
+
+                ostringstream oss;
+                oss << setprecision(static_cast<int>(boost::detail::lcast_get_precision<double>()))
+                    << val;
+
+                if (oss.fail())
+                    return false;
+
+                string str = oss.str();
+
+                if (str.size() >= CharacterBufferSize)
+                    return false;
+
+                copy(str.begin(), str.end(), begin);
+                begin[str.size()] = '\0';
+
+                finish = start + str.size();
                 return finish > start;
             }
 
 #ifndef __MINGW32__
             bool shl_real_type(long double val, char* begin) {
                 using namespace std;
-                finish = start +
-#if defined(_MSC_VER) && (_MSC_VER >= 1400) && !defined(__SGI_STL_PORT) && !defined(_STLPORT_VERSION)
-                    sprintf_s(begin, CharacterBufferSize,
-#else
-                    sprintf(begin,
-#endif
-                    "%.*Lg", static_cast<int>(boost::detail::lcast_get_precision<long double>()), val );
+
+                ostringstream oss;
+                oss << setprecision(static_cast<int>(boost::detail::lcast_get_precision<long double>()))
+                    << val;
+
+                if (oss.fail())
+                    return false;
+
+                string str = oss.str();
+
+                if (str.size() >= CharacterBufferSize)
+                    return false;
+
+                copy(str.begin(), str.end(), begin);
+                begin[str.size()] = '\0';
+
+                finish = start + str.size();
                 return finish > start;
             }
 #endif
